@@ -5,26 +5,24 @@
 #include <stdint.h>
 #include <sys\stat.h>
 
-#include "my_stack_func.h"
-#include "functions_for_input.h"
+#include "mystacklib/my_stack_func.h"
+#include "oneginlib/functions_for_input.h"
 #include "asm_func.h"
-
-#define ASM_FILE "program on asm.txt"
 
 int main (void) {
 
-    atexit(LogFileClose);
+//============================ Inputting part =================================
 
-    FILE *asm_file = fopen (ASM_FILE, "rb");
+    FILE *asm_file = fopen (ASM_FILE, "rb");                 //TODO func from there
 
-    struct stat asm_file_stat;
+    struct stat asm_file_stat = {};
     stat (ASM_FILE, &asm_file_stat);
 
     char *buf = BufferMaker (asm_file_stat.st_size);
 
     FileToBuf (asm_file, buf, asm_file_stat.st_size);
 
-    fclose (ASM_FILE);
+    fclose (ASM_FILE);                                       //TODO func to there
 
     size_t number_of_strings = StringCounter (buf, asm_file_stat.st_size);
 
@@ -36,7 +34,13 @@ int main (void) {
 
     rSymbolChecker (pointers_to_strings, number_of_strings);
 
-    FILE *byte_code = fopen ("byte code.txt", "w");
+    FILE *byte_code = fopen (BYTE_CODE, "wb");
+
+//========================== ASM file analysis ==================================
+
+    int code_array[number_of_strings * 2] = {};
 
     StringAnalyser (pointers_to_strings);
+
+
 }
