@@ -5,7 +5,12 @@
 
 #define BYTE_CODE "byte code.bin"
 
-const char* delimiters = " ";
+enum ASM_FUNC_STATUS {
+
+    OK,
+    FAIL
+}
+
 
 
 
