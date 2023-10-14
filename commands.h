@@ -1,19 +1,13 @@
-#ifndef COMMANDS_H
-#define COMMANDS_H
 
-struct Command {
+DEF_CMD (PUSH, 1)
+
+DEF_CMD (POP, 2)
+
+DEF_CMD (ADD, 3)
+
+DEF_CMD (SUB, 4)
+
+DEF_CMD (HLT, -1)
 
 
-};
 
-enum Opcodes {
-
-    POP,
-    PUSH,
-    DIV
-    SUB,
-    OUT,
-    HLT,
-}
-
-#endif
