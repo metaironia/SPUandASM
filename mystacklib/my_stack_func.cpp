@@ -7,21 +7,21 @@
 
 #include "my_stack_func.h"
 
-FILE *LOG_FILE = LogFileOpen("log.txt");
+FILE *LOG_FILE_STACK = StackLogFileOpen("stack_log.txt");
 
-FILE *LogFileOpen (const char *file) {
+FILE *StackLogFileOpen (const char *log_file) {
 
-    atexit (LogFileClose);
+    atexit (StackLogFileClose);
 
-    return fopen (file, "w");
+    return fopen (log_file, "w");
 }
 
-void LogFileClose (void) {
+void StackLogFileClose (void) {
 
-    if (LOG_FILE)
-        fclose (LOG_FILE);
+    if (LOG_FILE_STACK)
+        fclose (LOG_FILE_STACK);
 
-    LOG_FILE = NULL;
+    LOG_FILE_STACK = NULL;
 }
 
 enum StackFuncStatus StackCtor (Stack *stk, int32_t stack_capacity) {
@@ -80,7 +80,7 @@ enum StackFuncStatus StackDtor (Stack *stk) {
 
     free (stk);
 
-    LOG_PRINT (LOG_FILE, "\n Stack successfully destructed. \n");
+    LOG_PRINT_STACK (LOG_FILE_STACK, "\n Stack successfully destructed. \n");
 
     return OK;
 }
@@ -112,7 +112,7 @@ enum StackFuncStatus StackDataDtor (Stack *stk) {
     if (stk -> data)
         return FAIL;
 
-    LOG_PRINT (LOG_FILE, "\n" "Stack data successfully destructed.\n");
+    LOG_PRINT_STACK (LOG_FILE_STACK, "\n" "Stack data successfully destructed.\n");
 
     return OK;
 }
@@ -141,7 +141,7 @@ enum StackFuncStatus StackPop (Stack *stk, Elem_t *ret_value) {
 
     if (((stk -> stack_size) - 1) < 0) {
 
-        LOG_PRINT (LOG_FILE, "Cannot do StackPop().\n");
+        LOG_PRINT_STACK (LOG_FILE_STACK, "Cannot do StackPop().\n");
         STACK_DUMP (stk);
         return FAIL;
     }
@@ -260,36 +260,36 @@ enum StackFuncStatus StackDump (Stack *stk_for_dump, const char *file_called,
         stack_size_bytes += MAX_CANARY_SIZE_BYTES - (stack_size_bytes % MAX_CANARY_SIZE_BYTES);
     )
 
-    LOG_PRINT (LOG_FILE,  "Stack [0x%p] \"%s\" from %s(%d) %s() \n"
-                          "    { \n"
-               CANARY_ON ("    left canary = 0x" CAN_FORMAT "\n")
-               CANARY_ON ("    right canary = 0x" CAN_FORMAT  "\n")
-                 HASH_ON ("    stack hash = %u \n")
-                 HASH_ON ("    data hash = %u \n")
-                          "    size = %I32d \n"
-                          "    capacity = %I32d \n"
-                          "    data [0x%p] \n"
-                          "        { \n"
-               CANARY_ON ("        left data canary = 0x" CAN_FORMAT "\n"),
-                          stk_for_dump, stack_name,
-                          file_called, line_called, func_called,
-               CANARY_ON ((stk_for_dump -> left_canary), (stk_for_dump -> right_canary),)
-                 HASH_ON ((stk_for_dump -> stack_hash), (stk_for_dump -> stack_data_hash),)
-                          (stk_for_dump -> stack_size),
-                          (stk_for_dump -> capacity),
-                          (stk_for_dump -> data)
-               CANARY_ON  (, *(Canary_t *)((char *)(stk_for_dump -> data) - MAX_CANARY_SIZE_BYTES)));
+    LOG_PRINT_STACK (LOG_FILE_STACK,  "Stack [0x%p] \"%s\" from %s(%d) %s() \n"
+                                      "    { \n"
+                           CANARY_ON ("    left canary = 0x" CAN_FORMAT "\n")
+                           CANARY_ON ("    right canary = 0x" CAN_FORMAT  "\n")
+                             HASH_ON ("    stack hash = %u \n")
+                             HASH_ON ("    data hash = %u \n")
+                                      "    size = %I32d \n"
+                                      "    capacity = %I32d \n"
+                                      "    data [0x%p] \n"
+                                      "        { \n"
+                           CANARY_ON ("        left data canary = 0x" CAN_FORMAT "\n"),
+                                      stk_for_dump, stack_name,
+                                      file_called, line_called, func_called,
+                           CANARY_ON ((stk_for_dump -> left_canary), (stk_for_dump -> right_canary),)
+                             HASH_ON ((stk_for_dump -> stack_hash), (stk_for_dump -> stack_data_hash),)
+                                      (stk_for_dump -> stack_size),
+                                      (stk_for_dump -> capacity),
+                                      (stk_for_dump -> data)
+                           CANARY_ON  (, *(Canary_t *)((char *)(stk_for_dump -> data) - MAX_CANARY_SIZE_BYTES)));
 
     for (int i = 0; i < (stk_for_dump -> capacity); i++) {
 
         if ((stk_for_dump -> data[i]) != POISON_NUM)
-            LOG_PRINT (LOG_FILE, "        *[%d] = " EL_FORMAT "\n", i, (stk_for_dump -> data[i]));
+            LOG_PRINT_STACK (LOG_FILE_STACK, "        *[%d] = " EL_FORMAT "\n", i, (stk_for_dump -> data[i]));
         else
-            LOG_PRINT (LOG_FILE, "        *[%d] = POISON_NUM \n", i);
+            LOG_PRINT_STACK (LOG_FILE_STACK, "        *[%d] = POISON_NUM \n", i);
 
     }
 
-    LOG_PRINT (LOG_FILE,
+    LOG_PRINT_STACK (LOG_FILE_STACK,
                CANARY_ON ("        right data canary = 0x" CAN_FORMAT "\n")
                           "        } \n"
                           "    }     \n"
@@ -318,17 +318,17 @@ enum StackFuncStatus StackDataHashGen (Stack *stk_for_hash) {
 
 enum StackFuncStatus LogPrintStackError (unsigned int errnum) {
 
-    LOG_PRINT (LOG_FILE, "An Error ");
+    LOG_PRINT_STACK (LOG_FILE_STACK, "An Error ");
 
     for (int curr_err_num = STACK_ERRORS_AMOUNT - 1, curr_err_status = 0;
          curr_err_num >= 0; curr_err_num--) {
 
         curr_err_status = (((1 << curr_err_num) & errnum) == 0) ? 0 : 1;
 
-        LOG_PRINT (LOG_FILE, "%d", curr_err_status);
+        LOG_PRINT_STACK (LOG_FILE_STACK, "%d", curr_err_status);
     }
 
-    LOG_PRINT (LOG_FILE, " occurred. \n");
+    LOG_PRINT_STACK (LOG_FILE_STACK, " occurred. \n");
 
     return OK;
 }

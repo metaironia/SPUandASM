@@ -2,19 +2,19 @@
 
 #include "asm_log.h"
 
-FILE *LOG_FILE = LogFileOpen (ASSEMBLING_LOG_TXT);
+FILE *ASM_LOG_FILE = AsmLogFileOpen (ASM_LOG_TXT);
 
-FILE *LogFileOpen (const char *log_file) {
+FILE *AsmLogFileOpen (const char *log_file) {
 
-    atexit (LogFileClose);
+    atexit (AsmLogFileClose);
 
     return fopen (log_file, "w");
 }
 
-void LogFileClose (void) {
+void AsmLogFileClose (void) {
 
-    if (LOG_FILE)
-        fclose (LOG_FILE);
+    if (ASM_LOG_FILE)
+        fclose (ASM_LOG_FILE);
 
-    LOG_FILE = NULL;
+    ASM_LOG_FILE = NULL;
 }

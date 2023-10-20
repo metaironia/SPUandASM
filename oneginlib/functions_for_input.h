@@ -5,8 +5,6 @@
 #include <string.h>
 #include <stdint.h>
 
-const char *FILE_NAME = "onegin.txt";
-
 struct PtrToStr {
     int64_t string_length;
     char *pointer_to_string;

@@ -7,6 +7,8 @@ DEF_CMD (ADD, 3)
 
 DEF_CMD (SUB, 4)
 
+DEF_CMD (DIV, 5)
+
 DEF_CMD (HLT, -1)
 
 

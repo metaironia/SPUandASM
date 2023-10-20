@@ -23,6 +23,9 @@ typedef int Elem_t;
 typedef unsigned long long Canary_t;
 
 /// Function exists to close log file.
-void LogFileClose (void);
+void StackLogFileClose (void);
+
+/// Exists to open log file.
+FILE *StackLogFileOpen (const char *file);
 
 #endif

@@ -1,12 +1,20 @@
 #ifndef ASM_LOG_H
 #define ASM_LOG_H
 
+#include <stdio.h>
 
-#define ASSEMBLING_LOG_TXT    "asm log.txt"
+/// Macros that prints to log file.
+#define LOG_PRINT_ASM(LOG_FILE_ASM, ...)  do {                                          \
+                                                  fprintf(LOG_FILE_ASM, __VA_ARGS__);   \
+                                                  fflush (LOG_FILE_ASM);                \
+                                                                                        \
+                                              } while (0)
 
-FILE *LogFileOpen (const char *log_file);
+#define ASM_LOG_TXT    "asm_log.txt"
 
-void LogFileClose (void);
+FILE *AsmLogFileOpen (const char *log_file);
+
+void AsmLogFileClose (void);
 
 
 #endif

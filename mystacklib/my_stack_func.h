@@ -6,11 +6,11 @@
 #include "hash_func.h"
 
 /// Macros that prints to log file.
-#define LOG_PRINT(LOG_FILE, ...)  do {                                \
-                                      fprintf(LOG_FILE, __VA_ARGS__); \
-                                      fflush (LOG_FILE);              \
-                                                                      \
-                                  } while (0)
+#define LOG_PRINT_STACK(LOG_FILE_STACK, ...)  do {                                      \
+                                                  fprintf(LOG_FILE_STACK, __VA_ARGS__); \
+                                                  fflush (LOG_FILE_STACK);              \
+                                                                                        \
+                                              } while (0)
 
 /// Macros that outputs name of variable.
 #define NAME_OF_VAR(x)     #x
@@ -209,6 +209,5 @@ enum StackFuncStatus StackDataHashGen (Stack *stk_for_hash);
 */
 enum StackFuncStatus LogPrintStackError (unsigned int errnum);
 
-FILE *LogFileOpen (const char *file);
 
 #endif
