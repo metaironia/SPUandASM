@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 
-/// Macros that prints to log file.
 #define LOG_PRINT_ASM(LOG_FILE_ASM, ...)  do {                                          \
                                                   fprintf(LOG_FILE_ASM, __VA_ARGS__);   \
                                                   fflush (LOG_FILE_ASM);                \

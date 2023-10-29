@@ -16,11 +16,12 @@
                                                                                                                  \
                                     if (ParseAndSetArgs (cmd_num,                                                \
                                                          ptrs_to_strings[current_str].pointer_to_string,         \
-                                                         code_arr, position_in_code_arr, have_arg) == FAIL) {    \
+                                                         current_pos_str, code_arr, position_in_code_arr,        \
+                                                         have_arg) == ASM_FUNC_FAIL) {                                    \
                                                                                                                  \
                                         PrintError (current_str + 1,                                             \
                                                     ptrs_to_strings[current_str].pointer_to_string);             \
-                                        return FAIL;                                                             \
+                                        return ASM_FUNC_FAIL;                                                             \
                                     }                                                                            \
                                 }                                                                                \
                                 else
@@ -33,19 +34,19 @@
                                                                                                             \
                                     if (JumpParse (cmd_num,                                                 \
                                                    ptrs_to_strings[current_str].pointer_to_string,          \
-                                                   code_arr, position_in_code_arr, labels,                  \
-                                                   *label_counter, num_of_compilation) == FAIL) {           \
+                                                   current_pos_str, code_arr, position_in_code_arr,         \
+                                                   labels, *label_counter, num_of_compilation) == ASM_FUNC_FAIL) {   \
                                                                                                             \
                                         PrintError (current_str + 1,                                        \
                                                     ptrs_to_strings[current_str].pointer_to_string);        \
-                                        return FAIL;                                                        \
+                                        return ASM_FUNC_FAIL;                                                        \
                                     }                                                                       \
                                 }                                                                           \
                                 else
 
 enum AsmFuncStatus Assemble (PtrToStr *const ptrs_to_strings, const size_t current_str,
-                             double *const code_arr, size_t *const position_in_code_arr,
-                             LabelForJump *const labels, size_t *label_counter,
+                             double *const code_arr,          size_t *const position_in_code_arr,
+                             LabelForJump *const labels,      size_t *label_counter,
                              const int num_of_compilation) {
 
     assert (ptrs_to_strings);
@@ -53,7 +54,7 @@ enum AsmFuncStatus Assemble (PtrToStr *const ptrs_to_strings, const size_t curre
     assert (position_in_code_arr);
 
     if (IsRestStringEmpty (ptrs_to_strings[current_str].pointer_to_string, 0))
-        return OK;
+        return ASM_FUNC_OK;
 
     char first_word[MAX_WORD_LENGTH] = "";
 
@@ -66,7 +67,7 @@ enum AsmFuncStatus Assemble (PtrToStr *const ptrs_to_strings, const size_t curre
     if (first_word[0] == ':') {
 
         if (num_of_compilation >= 2)
-            return OK;
+            return ASM_FUNC_OK;
 
         strcpy (labels[*label_counter].name, first_word + 1);           //TODO fix strncpy instead of strcpy
         labels[*label_counter].address = *position_in_code_arr;
@@ -74,9 +75,9 @@ enum AsmFuncStatus Assemble (PtrToStr *const ptrs_to_strings, const size_t curre
         (*label_counter)++;
 
         if (IsRestStringEmpty (ptrs_to_strings[current_str].pointer_to_string, current_pos_str))
-            return OK;
+            return ASM_FUNC_OK;
         else
-            return FAIL;
+            return ASM_FUNC_FAIL;
     }
 
     #include "commands.h"
@@ -85,10 +86,10 @@ enum AsmFuncStatus Assemble (PtrToStr *const ptrs_to_strings, const size_t curre
 
         PrintError (current_str + 1, ptrs_to_strings[current_str].pointer_to_string);
 
-        return FAIL;
+        return ASM_FUNC_FAIL;
     }
 
-    return OK;
+    return ASM_FUNC_OK;
 }
 
 /*enum AsmFuncStatus RegFind (PtrToStr *ptrs_to_strs, size_t curr_str, int *reg_number) {
@@ -102,10 +103,10 @@ enum AsmFuncStatus Assemble (PtrToStr *const ptrs_to_strings, const size_t curre
 
         *reg_number = (reg_symbol - 'a');
 
-        return OK;
-    }                      //TODO maybe switch FAIL and OK
+        return ASM_FUNC_OK;
+    }                      //TODO maybe switch ASM_FUNC_FAIL and ASM_FUNC_OK
 
-    return FAIL;
+    return ASM_FUNC_FAIL;
 } */
 
 enum AsmFuncStatus EmitCodeNoArg (double *const arr_of_code,  size_t *const pos, const int command_code) {
@@ -115,11 +116,11 @@ enum AsmFuncStatus EmitCodeNoArg (double *const arr_of_code,  size_t *const pos,
 
     arr_of_code[(*pos)++] = command_code;
 
-    return OK;
+    return ASM_FUNC_OK;
 }
 
 enum AsmFuncStatus EmitCodeArg (double *const arr_of_code,  size_t *const pos,
-                                const int command_code, const double val) {
+                                const int command_code,     const double val) {
 
     assert (arr_of_code);
     assert (pos);
@@ -128,11 +129,11 @@ enum AsmFuncStatus EmitCodeArg (double *const arr_of_code,  size_t *const pos,
     arr_of_code[(*pos)++] = val;
 
 
-    return OK;
+    return ASM_FUNC_OK;
 }
 
 enum AsmFuncStatus EmitCodeReg (double *const arr_of_code,  size_t *const pos,
-                                const int command_code, const int reg) {
+                                const int command_code,     const int reg) {
 
     assert (arr_of_code);
     assert (pos);
@@ -140,11 +141,11 @@ enum AsmFuncStatus EmitCodeReg (double *const arr_of_code,  size_t *const pos,
     arr_of_code[(*pos)++] = command_code;
     arr_of_code[(*pos)++] = reg;
 
-    return OK;
+    return ASM_FUNC_OK;
 }
 
 enum AsmFuncStatus EmitCodeRegAndArg (double *const arr_of_code,  size_t *const pos,
-                                      const int command_code, const int reg, const double val) {
+                                      const int command_code,     const int reg,     const double val) {
 
     assert (arr_of_code);
     assert (pos);
@@ -153,7 +154,7 @@ enum AsmFuncStatus EmitCodeRegAndArg (double *const arr_of_code,  size_t *const 
     arr_of_code[(*pos)++] = reg;
     arr_of_code[(*pos)++] = val;
 
-    return OK;
+    return ASM_FUNC_OK;
 }
 
 enum AsmFuncStatus WriteToBinFile (double *const arr_of_code, const size_t pos, FILE *bin_to_write) {
@@ -173,11 +174,11 @@ enum AsmFuncStatus WriteToBinFile (double *const arr_of_code, const size_t pos, 
 
     for (int current_byte = sizeof (double) * 8 - 1; current_byte >= 0; current_byte--)
         LOG_PRINT_ASM (ASM_LOG_FILE, "%d",
-                       ((((long long)(arr_of_code[pos]) & (1 << current_byte)) == 0 ? 0 : 1)));
+                       ((((long long)(arr_of_code[pos]) & (1 << current_byte)) == 0 ? 0 : 1)));  //TODO fix compare by memcmp
 
     LOG_PRINT_ASM (ASM_LOG_FILE, ")\n");
 
-    return OK;
+    return ASM_FUNC_OK;
 }
 
 enum AsmFuncStatus PrintError (const size_t line, const char* const string_with_error) {
@@ -186,7 +187,7 @@ enum AsmFuncStatus PrintError (const size_t line, const char* const string_with_
 
     printf ("Syntax error at line %d: %s\n", line, string_with_error);
 
-    return OK;
+    return ASM_FUNC_OK;
 }
 
 enum AsmFuncStatus FindCommentaryInString (PtrToStr *const ptr_to_strs, const size_t curr_str) {
@@ -198,32 +199,30 @@ enum AsmFuncStatus FindCommentaryInString (PtrToStr *const ptr_to_strs, const si
     if (is_commentary)
         *is_commentary = '\0';
 
-    return OK;
+    return ASM_FUNC_OK;
 }
 
 enum AsmFuncStatus ParseAndSetArgs (int command_num,              const char* const asm_string,
-                                    double * const array_of_code, size_t *const position,
-                                    const int have_arg) {
-    if (have_arg == 0) {  //TODO have args instead num
+                                    size_t position_in_string,    double * const array_of_code,
+                                    size_t *const position,       const int have_arg) {
+    if (have_arg == 0) {
 
         EmitCodeNoArg (array_of_code, position, command_num);
 
-        return OK;
+        return ASM_FUNC_OK;
     }
 
-    size_t current_pos_in_string = 0;
+    bool has_bracket = IsSquareBracket (asm_string, &position_in_string, '[');
 
-    bool has_bracket = IsSquareBracket (asm_string, &current_pos_in_string, '[');
-
-    if (current_pos_in_string == 0 || IsRestStringEmpty (asm_string, current_pos_in_string))
-        return FAIL;
+    if (position_in_string == 0 || IsRestStringEmpty (asm_string, position_in_string))
+        return ASM_FUNC_FAIL;
 
     double value = NAN;
-    size_t temp_current_pos_in_string = 0;
+    size_t temp_position_in_string = 0;
 
-    sscanf (asm_string + current_pos_in_string, "%lf%n", &value, &temp_current_pos_in_string);
+    sscanf (asm_string + position_in_string, "%lf%n", &value, &temp_position_in_string);
 
-    current_pos_in_string += temp_current_pos_in_string;
+    position_in_string += temp_position_in_string;
 
     if (!isnan (value)) {
 
@@ -236,27 +235,27 @@ enum AsmFuncStatus ParseAndSetArgs (int command_num,              const char* co
 
         char reg_symbol = '\0';
 
-        sscanf (asm_string + current_pos_in_string, "r%cx%n", &reg_symbol, &temp_current_pos_in_string);
+        sscanf (asm_string + position_in_string, " r%cx%n", &reg_symbol, &temp_position_in_string);
 
         if (reg_symbol != '\0' && tolower (reg_symbol) >= 'a' && tolower (reg_symbol) <= 'd') {
 
-            current_pos_in_string += temp_current_pos_in_string;
+            position_in_string += temp_position_in_string;
 
             command_num |= ARG_FORMAT_REG;
 
             int reg_number = reg_symbol - 'a' + 1;
 
-            sscanf (asm_string + current_pos_in_string, "+ %lf%n", &value, &temp_current_pos_in_string);
+            sscanf (asm_string + position_in_string, " + %lf%n", &value, &temp_position_in_string);
 
             if (isnan (value))
                 EmitCodeReg (array_of_code, position, command_num, reg_number);
 
             else {
 
-                current_pos_in_string += temp_current_pos_in_string;
+                position_in_string += temp_position_in_string;
 
                 command_num |= ARG_FORMAT_IMMED;
-
+                                                                                                    //TODO flag to RAM
                 EmitCodeRegAndArg (array_of_code, position, command_num, reg_number, value);
             }
         }
@@ -264,74 +263,77 @@ enum AsmFuncStatus ParseAndSetArgs (int command_num,              const char* co
 
     if (has_bracket) {
 
-        if (IsSquareBracket   (asm_string, &current_pos_in_string, ']') &&
-            IsRestStringEmpty (asm_string, current_pos_in_string))
+        if (IsSquareBracket   (asm_string, &position_in_string, ']') &&
+            IsRestStringEmpty (asm_string, position_in_string))
 
-            return OK;
+            return ASM_FUNC_OK;
     }
 
-    else if (IsRestStringEmpty (asm_string, current_pos_in_string))
-        return OK;
-printf("fail");
-    return FAIL;
+    else if (IsRestStringEmpty (asm_string, position_in_string))
+        return ASM_FUNC_OK;
+
+    return ASM_FUNC_FAIL;
 }
 
-enum AsmFuncStatus JumpParse (const int command_num, const char* const asm_string,
-                              double * const array_of_code, size_t *const position,
-                              LabelForJump *const label_jmp, const size_t label_count,
-                              const int compilation_num) {
+enum AsmFuncStatus JumpParse (const int command_num,      const char* const asm_string,
+                              size_t position_in_string, double * const array_of_code,
+                              size_t *const position,     LabelForJump *const label_jmp,
+                              const size_t label_count,   const int compilation_num) {
 
     char current_label_name[MAX_WORD_LENGTH] = "";
 
-    size_t current_pos_in_string = 0;
+    size_t temp_position_in_string = 0;
 
-    sscanf (asm_string + current_pos_in_string, "%*s %s%n", current_label_name, &current_pos_in_string);
+    sscanf (asm_string + position_in_string, "%s%n", current_label_name, &temp_position_in_string);
+
+    position_in_string += temp_position_in_string;
 
     for (size_t i = 0; i < label_count; i++)
         if (strcmp (current_label_name, (label_jmp[i].name)) == 0) {
 
-            array_of_code[(*position)++] = command_num;
-            array_of_code[(*position)++] = (label_jmp[i].address);
+            EmitCodeArg (array_of_code, position, command_num, label_jmp[i].address);
 
-            if (IsRestStringEmpty (asm_string, current_pos_in_string))
-                return OK;
+            if (IsRestStringEmpty (asm_string, position_in_string))
+                return ASM_FUNC_OK;
         }
 
     if (compilation_num == 1) {
 
         *position += 2;
 
-        return OK;
+        return ASM_FUNC_OK;
     }
 
-    return FAIL;
+    return ASM_FUNC_FAIL;
 }
 
-bool IsRestStringEmpty (const char *const string_to_check, size_t position_in_string) {
+bool IsRestStringEmpty (const char *const string_to_check, size_t pos_in_string) {
 
-    char current_symbol = *(string_to_check + position_in_string);
+    char current_symbol = *(string_to_check + pos_in_string);
 
     while (current_symbol != '\0') {
 
         if (!isspace (current_symbol))
             return false;
 
-        current_symbol = *(string_to_check + (++position_in_string));
+        current_symbol = *(string_to_check + (++pos_in_string));
     }
 
     return true;
 }
 
-bool IsSquareBracket (const char *const string_to_check, size_t *position_in_string,
+bool IsSquareBracket (const char *const string_to_check, size_t *pos_in_string,
                       const char bracket_type) {
 
     char check_bracket = '\0';
 
-    sscanf (string_to_check, "%*s %n%c", position_in_string, &check_bracket);
+    size_t temp_pos_in_string = 0;
+
+    sscanf (string_to_check + *pos_in_string, " %n%c", &temp_pos_in_string, &check_bracket);
 
     if (check_bracket == bracket_type) {
 
-        (*position_in_string)++;
+        (*pos_in_string) += temp_pos_in_string + 1;
 
         return true;
     }
@@ -356,5 +358,5 @@ enum AsmFuncStatus PrintJumpLabel (const LabelForJump *const label_jmp) {
         printf ("\n");
     }
 
-    return OK;
+    return ASM_FUNC_OK;
 }

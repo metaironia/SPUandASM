@@ -14,53 +14,79 @@ enum SpuFuncStatus RunByteCode (FILE *bin_file) {
 
     StackCtor (&main_spu -> stk);
 
-    double cmd = 0;
+    long long command = 0;
 
-    fread (&cmd, sizeof (cmd), 1, bin_file);    //TODO skip empty cmd
+    double code_array = {};     //TODO fix code array size
 
-    if (cmd == 0)
-        return FAIL;
+    for (size_t i = 0; feof (bin_file); i++)
+        fread (&code_array[i], sizeof (code_array[0]), 1, bin_file);
 
-    switch (cmd & 0xF) {
+    size_t position_in_code_array = 0;
 
-        case CMD_PUSH: {
+    while (1) {    //TODO skip empty cmd
 
-            int arg = 0
+        command = (long long) code_array[position_in_code_array];
 
-            double prev_cmd = cmd;
+        switch (cmd & BYTE_MASK_FOR_CMD) {
 
-            fread (&cmd, sizeof (cmd), 1, bin_file);
+            case CMD_PUSH: {
 
-            if (prev_cmd & ARG_FORMAT_IMMED != 0)
-                PUSH (arg);
+                int arg = 0
 
-            else if (prev_cmd & ARG_FORMAT_REG != 0)
-                PUSH (&spu -> regs[arg]);
+                double prev_cmd = cmd;
 
-            break;
+                fread (&cmd, sizeof (cmd), 1, bin_file);
+
+                if (prev_cmd & ARG_FORMAT_IMMED != 0)
+                    PUSH (arg);
+
+                else if (prev_cmd & ARG_FORMAT_REG != 0)
+                    PUSH (&spu -> regs[arg]);
+
+                break;
+            }
+
+            case CMD_POP: {
+
+                int reg = 0;
+
+                fread (&reg, sizeof (reg), 1, bin_file);
+
+                POP (reg);
+
+                break;
+            }
+
+            case CMD_ADD:
+
+                int first_number = 0;
+
+                PUSH (POP + POP);  //??
+
+                break;
+
+            case CMD_HLT:
+
+                return FAIL;
         }
-
-        case CMD_POP: {
-
-            int reg = 0;
-
-            fread (&reg, sizeof (reg), 1, bin_file);
-
-            POP (reg);
-
-            break;
-        }
-
-        case CMD_ADD:
-
-            int first_number = 0;
-
-            PUSH (POP + POP);  //??
-
-            break;
-
-        case CMD_HLT:
-
-            return FAIL;
     }
+}
+
+double *GetArgument (const double *code_arr, size_t *code_arr_position) {
+
+    assert (code_arr);
+
+    long long cmd = code_arr[(*code_arr_position)++]
+
+    static double result = 0;
+
+    if (cmd & ARG_FORMAT_IMMED)
+        result += code[(*code_arr_position)++];
+
+    if (cmd & ARG_FORMAT_REG)
+        result += regs[(*code_arr_position)++];
+
+    //TODO RAM
+
+    return &result;
 }

@@ -48,7 +48,7 @@ int main (const int argc, const char *argv[]) {
 
     for (size_t current_string = 0; current_string < number_of_strings; current_string++)
         if (Assemble (pointers_to_strings, current_string, code_array,
-            &position_in_code_array, labels_to_jmp, &labels_counter, 1) == AsmFuncStatus::FAIL)
+            &position_in_code_array, labels_to_jmp, &labels_counter, 1) == ASM_FUNC_FAIL)
 
             return -1;
 
@@ -58,7 +58,7 @@ int main (const int argc, const char *argv[]) {
 
     for (size_t current_string = 0; current_string < number_of_strings; current_string++)
         if (Assemble (pointers_to_strings, current_string, code_array,
-            &position_in_code_array, labels_to_jmp, &labels_counter, 2) == AsmFuncStatus::FAIL)
+            &position_in_code_array, labels_to_jmp, &labels_counter, 2) == ASM_FUNC_FAIL)
 
             return -1;
 

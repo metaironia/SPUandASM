@@ -16,10 +16,7 @@ int main (const int argc, const char *argv[]) {
     FILE* byte_code = fopen (BYTE_CODE, "rb");
     assert (byte_code);
 
-    double a = NAN;
-    fread (&a, sizeof (a), 1, byte_code);
-    printf("%lf", a);
-   // RunByteCode (byte_code, main_spu);
+    RunByteCode (byte_code);
 
     return 0;
 }
