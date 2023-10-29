@@ -10,29 +10,31 @@
 #include "extern_for_asm.h"
 
 
-#define DEF_CMD(cmd_name, cmd_num, num_of_args, ...)                                                        \
-                                                                                                            \
-                                if (strcmp (first_word, #cmd_name) == 0) {                                  \
-                                                                                                            \
-                                    if (ParseAndSetArgs (cmd_num,                                           \
-                                                    ptrs_to_strings[current_str].pointer_to_string,         \
-                                                    code_arr, position_in_code_arr, num_of_args) == FAIL) { \
-                                                                                                            \
-                                        PrintError (current_str + 1,                                        \
-                                                    ptrs_to_strings[current_str].pointer_to_string);        \
-                                        return FAIL;                                                        \
-                                    }                                                                       \
-                                }                                                                           \
+#define DEF_CMD(cmd_name, cmd_num, have_arg, ...)                                                                \
+                                                                                                                 \
+                                if (strcmp (first_word, #cmd_name) == 0) {                                       \
+                                                                                                                 \
+                                    if (ParseAndSetArgs (cmd_num,                                                \
+                                                         ptrs_to_strings[current_str].pointer_to_string,         \
+                                                         code_arr, position_in_code_arr, have_arg) == FAIL) {    \
+                                                                                                                 \
+                                        PrintError (current_str + 1,                                             \
+                                                    ptrs_to_strings[current_str].pointer_to_string);             \
+                                        return FAIL;                                                             \
+                                    }                                                                            \
+                                }                                                                                \
                                 else
 
-#define MAKE_JUMP(cmd_name, cmd_num, ...)                                                                   \
+#define DEF_COND_JMP DEF_JMP
+
+#define DEF_JMP(cmd_name, cmd_num, ...)                                                                     \
                                                                                                             \
                                 if (strcmp (first_word, #cmd_name) == 0) {                                  \
                                                                                                             \
                                     if (JumpParse (cmd_num,                                                 \
                                                    ptrs_to_strings[current_str].pointer_to_string,          \
                                                    code_arr, position_in_code_arr, labels,                  \
-                                                   *label_counter) == FAIL) {                                \
+                                                   *label_counter, num_of_compilation) == FAIL) {           \
                                                                                                             \
                                         PrintError (current_str + 1,                                        \
                                                     ptrs_to_strings[current_str].pointer_to_string);        \
@@ -43,13 +45,14 @@
 
 enum AsmFuncStatus Assemble (PtrToStr *const ptrs_to_strings, const size_t current_str,
                              double *const code_arr, size_t *const position_in_code_arr,
-                             LabelForJump *const labels, size_t *label_counter) {
+                             LabelForJump *const labels, size_t *label_counter,
+                             const int num_of_compilation) {
 
     assert (ptrs_to_strings);
     assert (code_arr);
     assert (position_in_code_arr);
 
-    if (IsRestStringEmpty (ptrs_to_strings[current_str].pointer_to_string, 0))      //TODO func
+    if (IsRestStringEmpty (ptrs_to_strings[current_str].pointer_to_string, 0))
         return OK;
 
     char first_word[MAX_WORD_LENGTH] = "";
@@ -62,10 +65,13 @@ enum AsmFuncStatus Assemble (PtrToStr *const ptrs_to_strings, const size_t curre
 
     if (first_word[0] == ':') {
 
-        strcpy (labels[*label_counter].name_of_label, first_word + 1);
+        if (num_of_compilation >= 2)
+            return OK;
+
+        strcpy (labels[*label_counter].name, first_word + 1);           //TODO fix strncpy instead of strcpy
         labels[*label_counter].address = *position_in_code_arr;
 
-        (*label_counter)++;       //TODO fix strncpy instead of strcpy
+        (*label_counter)++;
 
         if (IsRestStringEmpty (ptrs_to_strings[current_str].pointer_to_string, current_pos_str))
             return OK;
@@ -163,7 +169,7 @@ enum AsmFuncStatus WriteToBinFile (double *const arr_of_code, const size_t pos, 
     else
         LOG_PRINT_ASM (ASM_LOG_FILE, "Write was failed: expected to write ");
 
-    LOG_PRINT_ASM (ASM_LOG_FILE, "value %.2lf in code array to position %Iu (", arr_of_code[pos], pos);
+    LOG_PRINT_ASM (ASM_LOG_FILE, "value %.5lf in code array to position %Iu (", arr_of_code[pos], pos);
 
     for (int current_byte = sizeof (double) * 8 - 1; current_byte >= 0; current_byte--)
         LOG_PRINT_ASM (ASM_LOG_FILE, "%d",
@@ -197,8 +203,8 @@ enum AsmFuncStatus FindCommentaryInString (PtrToStr *const ptr_to_strs, const si
 
 enum AsmFuncStatus ParseAndSetArgs (int command_num,              const char* const asm_string,
                                     double * const array_of_code, size_t *const position,
-                                    const int num_of_args) {
-    if (num_of_args == 0) {  //TODO have args instead num
+                                    const int have_arg) {
+    if (have_arg == 0) {  //TODO have args instead num
 
         EmitCodeNoArg (array_of_code, position, command_num);
 
@@ -234,13 +240,15 @@ enum AsmFuncStatus ParseAndSetArgs (int command_num,              const char* co
 
         if (reg_symbol != '\0' && tolower (reg_symbol) >= 'a' && tolower (reg_symbol) <= 'd') {
 
+            current_pos_in_string += temp_current_pos_in_string;
+
             command_num |= ARG_FORMAT_REG;
 
             int reg_number = reg_symbol - 'a' + 1;
 
-            if (sscanf (asm_string + current_pos_in_string, "+ %lf%n",
-                &value, &temp_current_pos_in_string) == -1)
+            sscanf (asm_string + current_pos_in_string, "+ %lf%n", &value, &temp_current_pos_in_string);
 
+            if (isnan (value))
                 EmitCodeReg (array_of_code, position, command_num, reg_number);
 
             else {
@@ -268,29 +276,33 @@ printf("fail");
     return FAIL;
 }
 
-enum AsmFuncStatus JumpParse (int command_num, const char* const asm_string,
+enum AsmFuncStatus JumpParse (const int command_num, const char* const asm_string,
                               double * const array_of_code, size_t *const position,
-                              LabelForJump *const label_jmp, size_t label_count) {
+                              LabelForJump *const label_jmp, const size_t label_count,
+                              const int compilation_num) {
 
-    char current_label[MAX_WORD_LENGTH] = "";
+    char current_label_name[MAX_WORD_LENGTH] = "";
 
     size_t current_pos_in_string = 0;
 
-    sscanf (asm_string + current_pos_in_string, "%*s %s%n", current_label, &current_pos_in_string);
+    sscanf (asm_string + current_pos_in_string, "%*s %s%n", current_label_name, &current_pos_in_string);
 
-    for (size_t i = 0; i < label_count; i++) {
-printf("what\n");
-printf("label jmp = %s\n", (label_jmp[i].name_of_label));
-printf("curr label = %s\n", current_label);
-        if (strcmp (current_label, (label_jmp[i].name_of_label)) == 0) {
+    for (size_t i = 0; i < label_count; i++)
+        if (strcmp (current_label_name, (label_jmp[i].name)) == 0) {
 
             array_of_code[(*position)++] = command_num;
             array_of_code[(*position)++] = (label_jmp[i].address);
-        }
-    }
 
-    if (IsRestStringEmpty (asm_string, current_pos_in_string))
+            if (IsRestStringEmpty (asm_string, current_pos_in_string))
+                return OK;
+        }
+
+    if (compilation_num == 1) {
+
+        *position += 2;
+
         return OK;
+    }
 
     return FAIL;
 }
@@ -325,4 +337,24 @@ bool IsSquareBracket (const char *const string_to_check, size_t *position_in_str
     }
 
     return false;
+}
+
+enum AsmFuncStatus PrintJumpLabel (const LabelForJump *const label_jmp) {
+
+    printf ("number of label:    \t");
+    printf ("name of label:      \t");
+    printf ("address of label:   \t\n");
+
+    for (size_t i = 0; i < MAX_NUM_OF_LABELS; i++) {
+
+        printf ("%-*d\t",   MAX_WORD_LENGTH, i);
+        printf ("%-*.*s\t", MAX_WORD_LENGTH, MAX_WORD_LENGTH, label_jmp[i].name);
+
+        if (label_jmp[i].name[0] != '\0')
+            printf ("%-*d\t",   MAX_WORD_LENGTH, label_jmp[i].address);
+
+        printf ("\n");
+    }
+
+    return OK;
 }

@@ -23,13 +23,17 @@ enum Commands {
 
     #define DEF_CMD(name, num, have_arg, ...)  CMD_##name = num,
 
-    #define MAKE_JUMP(cmd_name, cmd_num, ...)                                                                   \
+    #define DEF_COND_JMP DEF_JMP
+
+    #define DEF_JMP(cmd_name, cmd_num, ...)
 
     #include "commands.h"
 
     #undef DEF_CMD
 
-    #undef MAKE_JUMP
+    #undef DEF_COND_JMP
+
+    #undef DEF_JMP
 };
 
 const int MAX_WORD_LENGTH = 20;
@@ -38,12 +42,13 @@ const int MAX_NUM_OF_LABELS = 10;
 struct LabelForJump {
 
     size_t address;
-    char name_of_label[MAX_WORD_LENGTH];
+    char name[MAX_WORD_LENGTH];
 };
 
 enum AsmFuncStatus Assemble (PtrToStr *const ptrs_to_strings, const size_t current_str,
                              double *const code_arr, size_t *const position_in_code_arr,
-                             LabelForJump *const labels, size_t *label_counter);
+                             LabelForJump *const labels, size_t *label_counter,
+                             const int num_of_compilation);
 
 enum AsmFuncStatus EmitCodeNoArg (double *const arr_of_code,  size_t *const pos,
                                   const int command_code);
@@ -67,13 +72,16 @@ enum AsmFuncStatus ParseAndSetArgs (int command_num,              const char* co
                                     double * const array_of_code, size_t *const position,
                                     const int num_of_args);
 
-enum AsmFuncStatus JumpParse (int command_num, const char* const asm_string,
+enum AsmFuncStatus JumpParse (const int command_num, const char* const asm_string,
                               double * const array_of_code, size_t *const position,
-                              LabelForJump *const label_jmp, size_t label_count);
+                              LabelForJump *const label_jmp, const size_t label_count,
+                              int compilation_num);
 
 bool IsRestStringEmpty (const char *const string_to_check, size_t position_in_string);
 
 bool IsSquareBracket (const char *const string_to_check, size_t *position_in_string,
                       const char bracket_type);
+
+enum AsmFuncStatus PrintJumpLabel (const LabelForJump *const label_jmp);
 
 #endif
