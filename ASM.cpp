@@ -41,10 +41,27 @@ int main (const int argc, const char *argv[]) {
     double *code_array = (double *) calloc (number_of_strings * 2, sizeof (double)); //TODO fix when will do jump
     size_t position_in_code_array = 0;
 
+    LabelForJump labels_to_jmp[MAX_NUM_OF_LABELS] = {};
+    size_t labels_counter = 0;
+
+//-------------------------- First compilation ---------------------------------------------------
+printf("first comp\n");
     for (size_t current_string = 0; current_string < number_of_strings; current_string++)
-        if (pointers_to_strings[current_string].pointer_to_string)
-            if (Assemble (pointers_to_strings, current_string, code_array, &position_in_code_array) ==
-                AsmFuncStatus::FAIL)
+        if (pointers_to_strings[current_string].pointer_to_string)                   //TODO fix this
+            if (Assemble (pointers_to_strings, current_string, code_array,
+                &position_in_code_array, labels_to_jmp, &labels_counter) == AsmFuncStatus::FAIL)
+
+                abort ();
+
+//-------------------------- Second compilation ---------------------------------------------------
+printf("second comp\n");
+    position_in_code_array = 0;
+    labels_counter = 0;
+
+    for (size_t current_string = 0; current_string < number_of_strings; current_string++)
+        if (pointers_to_strings[current_string].pointer_to_string)                   //TODO fix this
+            if (Assemble (pointers_to_strings, current_string, code_array,
+                &position_in_code_array, labels_to_jmp, &labels_counter) == AsmFuncStatus::FAIL)
 
                 abort ();
 

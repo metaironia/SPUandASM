@@ -1,15 +1,13 @@
+DEF_CMD (push, 1, 1, wtf)
 
-DEF_CMD (PUSH, 1)
+DEF_CMD (pop, 2, 1, wtf)
 
-DEF_CMD (POP, 2)
+DEF_CMD (add, 3, 0, wtf)
 
-DEF_CMD (ADD, 3)
+DEF_CMD (sub, 4, 0, wtf)
 
-DEF_CMD (SUB, 4)
+DEF_CMD (div, 5, 0, wtf)
 
-DEF_CMD (DIV, 5)
+DEF_CMD (hlt, -1, 0, wtf)
 
-DEF_CMD (HLT, -1)
-
-
-
+MAKE_JUMP (jmp, 10, wtf)

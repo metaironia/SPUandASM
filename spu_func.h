@@ -2,15 +2,23 @@
 #define SPU_H
 
 
-#include "mystacklib/my_stack_func.h"
+//#include "mystacklib/my_stack_func.h"
 
-#define BYTE_CODE             "byte code.bin"
+#define BYTE_CODE  "byte code.bin"
 
-enum SpuFuncStatus {
+#define PUSH(arg)  StackPush (&spu -> stk, arg)
 
-    OK,
-    FAIL
-};
+#define POP(reg)   StackPop (&spu -> stk, &spu -> regs[reg]));
+   //??
+
+const int ARG_FORMAT_IMMED = (1 << 5);
+const int ARG_FORMAT_REG   = (1 << 6);
+
+//enum SpuFuncStatus {
+//
+//    OK,
+//    FAIL
+//};
 
 struct SpuStruct {
 
@@ -18,5 +26,13 @@ struct SpuStruct {
     int regs[4]; // rax, rbx, rcx, rdx
 };
 
+enum Commands {
+
+    #define DEF_CMD(name, num, ...)  CMD_##name = num,
+
+    #include "commands.h"
+
+    #undef DEF_CMD
+};
 
 #endif

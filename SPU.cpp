@@ -6,6 +6,7 @@
 #include <sys\stat.h>
 
 #include "mystacklib/my_stack_func.h"
+#include "spu_func.h"
 
 
 int main (const int argc, const char *argv[]) {
@@ -15,9 +16,10 @@ int main (const int argc, const char *argv[]) {
     FILE* byte_code = fopen (BYTE_CODE, "rb");
     assert (byte_code);
 
-    SpuStruct main_spu = {};
+    double a = NAN;
+    fread (&a, sizeof (a), 1, byte_code);
+    printf("%lf", a);
+   // RunByteCode (byte_code, main_spu);
 
-    StackCtor (&main_spu -> stk);
-
-    RunByteCode (byte_code, main_spu)
+    return 0;
 }
