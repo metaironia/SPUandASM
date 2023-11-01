@@ -4,15 +4,16 @@
 
 #include "mystacklib/my_stack_func.h"
 
-#define BYTE_CODE  "byte code.bin"
+#define BYTE_CODE      "byte code.bin"
 
-#define PUSH(arg)  StackPush (&spu -> stk, arg)
+#define PUSH(arg)      StackPush (&(main_spu.stk), arg)
 
-#define POP(reg)   StackPop (&spu -> stk, &spu -> regs[reg]));
-   //??
+#define POP            StackPop (&(main_spu.stk))
+
 
 const int ARG_FORMAT_IMMED  = (1 << 5);
 const int ARG_FORMAT_REG    = (1 << 6);
+const int ARG_FORMAT_RAM    = (1 << 7);
 
 const int BYTE_MASK_FOR_CMD = 0x1F;
 
@@ -26,6 +27,12 @@ struct SpuStruct {
 
     Stack stk;
     int regs[4]; // rax, rbx, rcx, rdx
+    int RAM[100]; // 100 because of DED advice
 };
+
+enum SpuFuncStatus RunByteCode (FILE *bin_file);
+
+double *GetArgument (const double *code_arr, size_t *code_arr_position, const char *const command_name,
+                     int *spu_RAM, int *spu_regs);
 
 #endif

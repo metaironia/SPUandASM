@@ -133,22 +133,20 @@ enum StackFuncStatus StackPush (Stack *stk, Elem_t value) {
     return OK;
 }
 
-enum StackFuncStatus StackPop (Stack *stk, Elem_t *ret_value) {
-
-    assert (ret_value);
+Elem_t StackPop (Stack *stk) {
 
     STACK_VERIFY (stk);
 
-    if (((stk -> stack_size) - 1) < 0) {
-
-        LOG_PRINT_STACK (LOG_FILE_STACK, "Cannot do StackPop().\n");
-        STACK_DUMP (stk);
-        return FAIL;
-    }
+//    if (((stk -> stack_size) - 1) < 0) {
+//
+//        LOG_PRINT_STACK (LOG_FILE_STACK, "Cannot do StackPop().\n");
+//        STACK_DUMP (stk);
+//        return FAIL;
+//    }
 
     StackRecalloc (stk);
 
-    *ret_value = (stk -> data)[(stk -> stack_size) - 1];
+    Elem_t ret_value = (stk -> data)[(stk -> stack_size) - 1];
     (stk -> data)[--(stk -> stack_size)] = POISON_NUM;
 
     HASH_ON (StackDataHashGen (stk));
@@ -156,7 +154,7 @@ enum StackFuncStatus StackPop (Stack *stk, Elem_t *ret_value) {
 
     ON_DEBUG (STACK_DUMP (stk));
 
-    return OK;
+    return ret_value;
 }
 
 enum StackFuncStatus StackRecalloc (Stack *stk) {

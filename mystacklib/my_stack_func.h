@@ -1,6 +1,8 @@
 #ifndef MY_STACK_FUNC_H
 #define MY_STACK_FUNC_H
 
+#include <stdio.h>
+
 #include "extern_for_stack.h"
 #include "my_stack_func_additional.h"
 #include "hash_func.h"
@@ -162,7 +164,7 @@ enum StackFuncStatus StackPush (Stack *stk, Elem_t value);
     @param [in, out] ret_value pointer to element that has to be popped.
     @return \p OK if was done successfully, \p FAIL if error happened.
 */
-enum StackFuncStatus StackPop (Stack *stk, Elem_t *ret_value);
+Elem_t StackPop (Stack *stk);
 
 /**
     Function that changes stack capacity depending on stack size.
