@@ -7,18 +7,29 @@
 
 #include "mystacklib/my_stack_func.h"
 #include "spu_func.h"
+#include "math_operation.h"
 
 
-#define DEF_JMP(cmd_name, cmd_code, ...)  case cmd_code:                     \
-                                             {__VA_ARGS__}                   \
-                                             break;                          \
+#define JMP_CODE                                        {position_in_code_array =                        \
+                                                         (size_t) code_array[position_in_code_array + 1]; \
+                                                         printf("AAAA %Iu\n", position_in_code_array);}
 
-#define DEF_COND_JMP(...)
 
-#define DEF_CMD(cmd_name, cmd_code, have_arg, ...)  case cmd_code:           \
-                                                        {__VA_ARGS__}        \
-                                                        break;               \
+#define DEF_JMP(cmd_name, cmd_code, have_arg)            DEF_CMD (cmd_name, cmd_code, have_arg, JMP_CODE)
 
+
+#define DEF_COND_JMP(cmd_name, cmd_code, have_arg, ...)  DEF_CMD (cmd_name, cmd_code, have_arg,           \
+                                                                 {double first_num = POP;                 \
+                                                                  double second_num = POP;                \
+                                                                  if (__VA_ARGS__(first_num, second_num)) \
+                                                                      {JMP_CODE}                          \
+                                                                  else { printf("BB");                                    \
+                                                                      position_in_code_array += 2;}})
+
+
+#define DEF_CMD(cmd_name, cmd_code, have_arg, ...)       case cmd_code:                                   \
+                                                             {__VA_ARGS__}                                \
+                                                             break;
 
 enum SpuFuncStatus RunByteCode (FILE *bin_file) {
 
@@ -33,14 +44,14 @@ enum SpuFuncStatus RunByteCode (FILE *bin_file) {
 
     long long command = 0;
 
-    double *code_array = (double *) calloc (bin_file_stat.st_size, 1);     //TODO fix code array size
+    double *code_array = (double *) calloc (bin_file_stat.st_size, 1);
 
     for (size_t i = 0; !feof (bin_file); i++)
         fread (&code_array[i], sizeof (code_array[0]), 1, bin_file);
 
     size_t position_in_code_array = 0;
 
-    while (1) {    //TODO skip empty cmd
+    while (1) {
 
         command = (long long) code_array[position_in_code_array];
 
@@ -55,13 +66,15 @@ enum SpuFuncStatus RunByteCode (FILE *bin_file) {
 }
 
 double *GetArgument (const double *code_arr, size_t *code_arr_position, const char *const command_name,
-                     int *spu_RAM, int *spu_regs) {
+                     double *spu_RAM, double *spu_regs) {
 
     assert (code_arr);
 
     long long cmd = (long long) code_arr[(*code_arr_position)++];
 
     static double result = 0;
+
+    result = 0;
 
     double *address = NULL;
 printf("getter\n");
@@ -77,13 +90,14 @@ printf("getter\n");
             pop_arg_immed = true;
 printf("immed\n");
         result += code_arr[(*code_arr_position)++];
+printf("result = %d\n", (long long) result);
 printf("crash");
     }
 
     if (cmd & ARG_FORMAT_REG) {
 printf("reg\n");
         result += spu_regs[(long long) code_arr[*code_arr_position]];
-
+printf("result = %d\n", (long long) result);
         address = (double *) spu_regs + (long long) code_arr[(*code_arr_position)++];
     }
 

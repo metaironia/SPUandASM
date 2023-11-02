@@ -28,7 +28,7 @@
 
 #define DEF_COND_JMP DEF_JMP
 
-#define DEF_JMP(cmd_name, cmd_num, ...)                                                                     \
+#define DEF_JMP(cmd_name, cmd_num, have_arg, ...)                                                                     \
                                                                                                             \
                                 if (strcmp (first_word, #cmd_name) == 0) {                                  \
                                                                                                             \
@@ -144,15 +144,15 @@ enum AsmFuncStatus EmitCodeReg (double *const arr_of_code,  size_t *const pos,
     return ASM_FUNC_OK;
 }
 
-enum AsmFuncStatus EmitCodeRegAndArg (double *const arr_of_code,  size_t *const pos,
+enum AsmFuncStatus EmitCodeArgAndReg (double *const arr_of_code,  size_t *const pos,
                                       const int command_code,     const int reg,     const double val) {
 
     assert (arr_of_code);
     assert (pos);
 
     arr_of_code[(*pos)++] = command_code;
-    arr_of_code[(*pos)++] = reg;
     arr_of_code[(*pos)++] = val;
+    arr_of_code[(*pos)++] = reg;
 
     return ASM_FUNC_OK;
 }
@@ -256,7 +256,7 @@ enum AsmFuncStatus ParseAndSetArgs (int command_num,              const char* co
 
                 command_num |= ARG_FORMAT_IMMED;
                                                                                                     //TODO flag to RAM
-                EmitCodeRegAndArg (array_of_code, position, command_num, reg_number, value);
+                EmitCodeArgAndReg (array_of_code, position, command_num, reg_number, value);
             }
         }
     }

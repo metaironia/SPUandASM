@@ -42,7 +42,7 @@ enum AsmFuncStatus EmitCodeArg (double *const arr_of_code,  size_t *const pos,
 enum AsmFuncStatus EmitCodeReg (double *const arr_of_code,  size_t *const pos,
                                 const int command_code, const int reg);
 
-enum AsmFuncStatus EmitCodeRegAndArg (double *const arr_of_code,  size_t *const pos,
+enum AsmFuncStatus EmitCodeArgAndReg (double *const arr_of_code,  size_t *const pos,
                                       const int command_code,     const int reg,     const double val);
 
 enum AsmFuncStatus FindCommentaryInString (PtrToStr *const ptr_to_strs, const size_t curr_str);

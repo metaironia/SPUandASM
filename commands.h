@@ -8,13 +8,17 @@ DEF_CMD (pop, 2, 1, *(GetArgument (code_array, &position_in_code_array, "pop",
 DEF_CMD (add, 3, 0, PUSH (POP + POP);
                     position_in_code_array++;)
 
-DEF_CMD (sub, 4, 0, PUSH (POP - POP);
+DEF_CMD (sub, 4, 0, double first_num = POP;
+                    double second_num = POP;
+                    PUSH (first_num - second_num);
                     position_in_code_array++;)
 
 DEF_CMD (mul, 5, 0, PUSH (POP * POP);
                     position_in_code_array++;)
 
-DEF_CMD (div, 6, 0, PUSH (POP / POP);
+DEF_CMD (div, 6, 0, double first_num = POP;
+                    double second_num = POP;
+                    PUSH (first_num / second_num);
                     position_in_code_array++;)
 
 DEF_CMD (in, 7, 0,  double num_to_in = 0;
@@ -37,19 +41,16 @@ DEF_CMD (cos, 11, 0, PUSH (cos (POP));
 
 DEF_CMD (hlt, -1, 0, return SPU_FUNC_FAIL;)
 
-DEF_JMP (jmp, 12,   position_in_code_array = (size_t) code_array[position_in_code_array + 1];
-                    printf("AAAA %Iu\n", position_in_code_array);)
+DEF_JMP (jmp, 12, 1)
 
-DEF_COND_JMP (ja, 13, >)
+DEF_COND_JMP (ja, 13, 1, IsDoubleLess)
 
-DEF_COND_JMP (jae, 14, >=)
+DEF_COND_JMP (jae, 14, 1, IsDoubleLessOrEqual)
 
-DEF_COND_JMP (ja, 15, <)
+DEF_COND_JMP (jb, 15, 1, !IsDoubleLess)
 
-DEF_COND_JMP (jb, 16, >)
+DEF_COND_JMP (jbe, 16, 1, !IsDoubleLessOrEqual)
 
-DEF_COND_JMP (jbe, 17, <=)
+DEF_COND_JMP (je, 17, 1, IsDoubleEqual)
 
-DEF_COND_JMP (je, 18, ==)
-
-DEF_COND_JMP (jne, 19, !=)
+DEF_COND_JMP (jne, 18, 1, !IsDoubleEqual)

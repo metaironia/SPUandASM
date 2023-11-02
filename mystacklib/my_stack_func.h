@@ -67,7 +67,7 @@ const int HOW_MUCH_STACK_DECREASES = 4;
 const int DECREASE_AMOUNT = 2;
 
 /// Poison number to data elements in stack.
-const Elem_t POISON_NUM = 0xDEAD;
+const Elem_t POISON_NUM = NAN;
 
 /// Struct that contains all info about stack.
 struct Stack {

@@ -137,12 +137,12 @@ Elem_t StackPop (Stack *stk) {
 
     STACK_VERIFY (stk);
 
-//    if (((stk -> stack_size) - 1) < 0) {
-//
-//        LOG_PRINT_STACK (LOG_FILE_STACK, "Cannot do StackPop().\n");
-//        STACK_DUMP (stk);
-//        return FAIL;
-//    }
+    if (((stk -> stack_size) - 1) < 0) {
+
+        LOG_PRINT_STACK (LOG_FILE_STACK, "Cannot do StackPop().\n");
+        STACK_DUMP (stk);
+        return POISON_NUM;
+    }
 
     StackRecalloc (stk);
 
@@ -280,7 +280,7 @@ enum StackFuncStatus StackDump (Stack *stk_for_dump, const char *file_called,
 
     for (int i = 0; i < (stk_for_dump -> capacity); i++) {
 
-        if ((stk_for_dump -> data[i]) != POISON_NUM)
+        if (!isnan (stk_for_dump -> data[i]))     //TODO fix that isnan
             LOG_PRINT_STACK (LOG_FILE_STACK, "        *[%d] = " EL_FORMAT "\n", i, (stk_for_dump -> data[i]));
         else
             LOG_PRINT_STACK (LOG_FILE_STACK, "        *[%d] = POISON_NUM \n", i);

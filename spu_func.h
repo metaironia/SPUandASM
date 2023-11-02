@@ -4,6 +4,7 @@
 
 #include "mystacklib/my_stack_func.h"
 
+
 #define BYTE_CODE      "byte code.bin"
 
 #define PUSH(arg)      StackPush (&(main_spu.stk), arg)
@@ -26,13 +27,13 @@ enum SpuFuncStatus {
 struct SpuStruct {
 
     Stack stk;
-    int regs[4]; // rax, rbx, rcx, rdx
-    int RAM[100]; // 100 because of DED advice
+    double regs[4]; // rax, rbx, rcx, rdx
+    double RAM[100]; // 100 because of DED advice
 };
 
 enum SpuFuncStatus RunByteCode (FILE *bin_file);
 
 double *GetArgument (const double *code_arr, size_t *code_arr_position, const char *const command_name,
-                     int *spu_RAM, int *spu_regs);
+                     double *spu_RAM, double *spu_regs);
 
 #endif
