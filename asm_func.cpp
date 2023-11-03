@@ -185,6 +185,34 @@ enum AsmFuncStatus WriteToBinFile (double *const arr_of_code, const size_t pos, 
     return ASM_FUNC_OK;
 }
 
+enum AsmFuncStatus WriteHeaderAsm (FILE *bin_to_write) {
+
+    assert (bin_to_write);
+
+    int sign_write = fwrite (ASM_SIGNATURE, sizeof (char),        4, bin_to_write);
+
+    fseek (bin_to_write, sizeof (double), SEEK_SET);
+
+    int vers_write = fwrite (&ASM_VERSION,  sizeof (ASM_VERSION), 1, bin_to_write);
+
+    fseek (bin_to_write, sizeof (double) * 2, SEEK_SET);
+
+    if (sign_write && vers_write) {
+
+        LOG_PRINT_ASM (ASM_LOG_FILE, "Successful header write: signature %s and version %.2lf\n",
+                       ASM_SIGNATURE, ASM_VERSION);
+
+        return ASM_FUNC_OK;
+    }
+
+    else {
+
+        LOG_PRINT_ASM (ASM_LOG_FILE, "Header write was failed\n");
+
+        return ASM_FUNC_FAIL;
+    }
+}
+
 enum AsmFuncStatus PrintError (const size_t line, const char* const string_with_error) {
 
     assert (string_with_error);

@@ -14,6 +14,14 @@
 #define POP_RET            StackPop (&(main_spu.stk_ret_addresses))
 
 
+#define SPU_SIGNATURE "SKA!"
+
+const int SPU_VERSION = 1.0;
+
+const int SIGNATURE_SIZE_BYTES = 4;
+const int VERSION_SIZE_BYTES   = 8;
+
+
 const int ARG_FORMAT_IMMED = (1 << 5);
 const int ARG_FORMAT_REG   = (1 << 6);
 const int ARG_FORMAT_RAM   = (1 << 7);
@@ -39,6 +47,8 @@ enum SpuFuncStatus RunByteCode (FILE *bin_file);
 enum SpuFuncStatus CommandLineArgChecker (const int argcc, const char *argvv[]);
 
 const char *BytecodeFileName (const char *argvv[]);
+
+enum SpuFuncStatus SignAndVersionChecker (FILE *bin_to_check);
 
 double *GetArgument (const double *code_arr, size_t *code_arr_position, const char *const command_name,
                      double *spu_RAM, double *spu_regs);

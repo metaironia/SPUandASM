@@ -39,7 +39,7 @@ int main (const int argc, const char *argv[]) {
 
     SlashRSymbolChecker (pointers_to_strings, number_of_strings);
 
-//========================== ASM file analysis  ===================================================
+//========================== ASM file analysis  ==================================================
 
     double *code_array = (double *) calloc (number_of_strings * 2, sizeof (double));
     size_t position_in_code_array = 0;
@@ -55,7 +55,7 @@ int main (const int argc, const char *argv[]) {
 
             return -1;
 
-//-------------------------- Second compilation ---------------------------------------------------
+//-------------------------- Second compilation --------------------------------------------------
 
     position_in_code_array = 0;
 
@@ -65,10 +65,16 @@ int main (const int argc, const char *argv[]) {
 
             return -1;
 
-//========================== Byte code creation ==================================================
+//========================== Output byte code  ===================================================
 
     FILE *byte_code = fopen (FileAfterAssembleName (argv), "wb");
     assert (byte_code);
+
+//-------------------------- Header writing ------------------------------------------------------
+
+    WriteHeaderAsm (byte_code);
+
+//-------------------------- Byte code writing ---------------------------------------------------
 
     position_in_code_array = 0;
 

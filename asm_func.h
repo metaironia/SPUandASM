@@ -2,6 +2,10 @@
 #define ASM_FUNC_H
 
 
+#define ASM_SIGNATURE "SKA!"
+
+const double ASM_VERSION = 1.0;
+
 const char COMMENTARY_MARK = ';';
 
 enum AsmFuncStatus {
@@ -41,6 +45,8 @@ enum AsmFuncStatus EmitCodeArgAndReg (double *const arr_of_code,  size_t *const 
                                       const int command_code,     const int reg,     const double val);
 
 enum AsmFuncStatus FindCommentaryInString (PtrToStr *const ptr_to_strs, const size_t curr_str);
+
+enum AsmFuncStatus WriteHeaderAsm (FILE *bin_to_write);
 
 enum AsmFuncStatus WriteToBinFile (double *const arr_of_code, size_t pos, FILE *bin_to_write);
 

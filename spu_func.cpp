@@ -35,6 +35,9 @@ enum SpuFuncStatus RunByteCode (FILE *bin_file) {
 
     assert (bin_file);
 
+    if (SignAndVersionChecker (bin_file) == SPU_FUNC_FAIL)
+        return SPU_FUNC_FAIL;
+
     struct stat bin_file_stat = {};
     fstat (fileno (bin_file), &bin_file_stat);
 
@@ -140,6 +143,34 @@ enum SpuFuncStatus CommandLineArgChecker (const int argcc, const char *argvv[]) 
     }
 
     return SPU_FUNC_OK;
+}
+
+enum SpuFuncStatus SignAndVersionChecker (FILE *bin_to_check) {
+
+    assert (bin_to_check);
+
+    char signature[SIGNATURE_SIZE_BYTES + 1] = {};
+    double version = 0;
+
+    int is_signature_read = fread (signature, 1, SIGNATURE_SIZE_BYTES, bin_to_check);
+
+    fseek (bin_to_check, sizeof (double),     SEEK_SET);
+
+    int is_version_read   = fread (&version,  sizeof (version),   1, bin_to_check);
+
+    fseek (bin_to_check, sizeof (double) * 2, SEEK_SET);
+
+    if (is_signature_read && is_version_read && IsDoubleEqual (version, SPU_VERSION) &&
+        strcmp (signature, SPU_SIGNATURE) == 0)
+
+        return SPU_FUNC_OK;
+
+    else {
+
+        fprintf (stderr, "Byte code is not compatible.");
+
+        return SPU_FUNC_FAIL;
+    }
 }
 
 const char *BytecodeFileName (const char *argvv[]) {
