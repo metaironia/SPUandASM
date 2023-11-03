@@ -11,8 +11,6 @@
 
 int main (const int argc, const char *argv[]) {
 
-//============================
-
     FILE* byte_code = fopen (BYTE_CODE, "rb");
     assert (byte_code);
 

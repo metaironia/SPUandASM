@@ -26,7 +26,7 @@
                                 }                                                                                \
                                 else
 
-#define DEF_COND_JMP DEF_JMP
+#define DEF_COND_JMP  DEF_JMP
 
 #define DEF_JMP(cmd_name, cmd_num, have_arg, ...)                                                                     \
                                                                                                             \
@@ -212,7 +212,10 @@ enum AsmFuncStatus ParseAndSetArgs (int command_num,              const char* co
         return ASM_FUNC_OK;
     }
 
-    bool has_bracket = IsSquareBracket (asm_string, &position_in_string, '[');
+    bool has_bracket = false;
+
+    if ((has_bracket = IsSquareBracket (asm_string, &position_in_string, '[')))
+        command_num |= ARG_FORMAT_RAM;
 
     if (position_in_string == 0 || IsRestStringEmpty (asm_string, position_in_string))
         return ASM_FUNC_FAIL;

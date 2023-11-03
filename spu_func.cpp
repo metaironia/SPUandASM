@@ -10,21 +10,22 @@
 #include "math_operation.h"
 
 
-#define JMP_CODE                                        {position_in_code_array =                        \
+#define JMP_CODE                                        {position_in_code_array =                         \
                                                          (size_t) code_array[position_in_code_array + 1]; \
                                                          printf("AAAA %Iu\n", position_in_code_array);}
 
 
-#define DEF_JMP(cmd_name, cmd_code, have_arg)            DEF_CMD (cmd_name, cmd_code, have_arg, JMP_CODE)
+#define DEF_JMP                                          DEF_CMD
 
 
 #define DEF_COND_JMP(cmd_name, cmd_code, have_arg, ...)  DEF_CMD (cmd_name, cmd_code, have_arg,           \
                                                                  {double first_num = POP;                 \
                                                                   double second_num = POP;                \
+                                                                                                          \
                                                                   if (__VA_ARGS__(first_num, second_num)) \
                                                                       {JMP_CODE}                          \
-                                                                  else { printf("BB");                                    \
-                                                                      position_in_code_array += 2;}})
+                                                                  else                                    \
+                                                                      position_in_code_array += 2;})
 
 
 #define DEF_CMD(cmd_name, cmd_code, have_arg, ...)       case cmd_code:                                   \
@@ -41,6 +42,7 @@ enum SpuFuncStatus RunByteCode (FILE *bin_file) {
     SpuStruct main_spu = {};
 
     StackCtor (&(main_spu.stk), 1);
+    StackCtor (&(main_spu.stk_ret_addresses), 1);
 
     long long command = 0;
 
@@ -77,7 +79,7 @@ double *GetArgument (const double *code_arr, size_t *code_arr_position, const ch
     result = 0;
 
     double *address = NULL;
-printf("getter\n");
+fprintf(stderr, "getter\n");
     bool is_pop = (strcmp ("pop", command_name) == 0);
     bool pop_arg_immed = false;
     bool pop_arg_ram = false;
@@ -88,36 +90,37 @@ printf("getter\n");
 
         if (is_pop)
             pop_arg_immed = true;
-printf("immed\n");
+fprintf(stderr, "immed\n");
         result += code_arr[(*code_arr_position)++];
-printf("result = %d\n", (long long) result);
-printf("crash");
+fprintf(stderr, "result = %d\n", (long long) result);
+fprintf(stderr, "crash");
     }
 
     if (cmd & ARG_FORMAT_REG) {
-printf("reg\n");
-        result += spu_regs[(long long) code_arr[*code_arr_position]];
-printf("result = %d\n", (long long) result);
-        address = (double *) spu_regs + (long long) code_arr[(*code_arr_position)++];
+fprintf(stderr, "reg\n");
+        address = (double *) spu_regs + (long long) code_arr[*code_arr_position];
+fprintf(stderr, "result = %d\n", (long long) result);
+        result += spu_regs[(long long) code_arr[(*code_arr_position)++]];
+fprintf(stderr, "last reg");
     }
 
     if (cmd & ARG_FORMAT_RAM) {
-printf("ram\n");
+fprintf(stderr, "ram\n");
         if (is_pop)
             pop_arg_ram = true;
-
-        result = spu_RAM[(long long) result];
-
+fprintf(stderr, "address before = %d", (long long) address);
         address = (double *) spu_RAM + (long long) result;
+fprintf(stderr, "address after = %d", (long long) address);
+        result = spu_RAM[(long long) result];
     }
-printf("fall");
+fprintf(stderr, "fall");
     if (is_pop) {
-printf("why");
+fprintf(stderr, "why");
         if (pop_arg_immed && !pop_arg_ram)
             return NULL;
         else
             return address;
     }
-printf("result address = %p, result = %d\n", &result, (long long) result);
+fprintf(stderr, "result address = %p, result = %d\n", &result, (long long) result);
     return &result;
 }
