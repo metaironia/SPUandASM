@@ -16,18 +16,9 @@ int main (const int argc, const char *argv[]) {
     if (CommandLineArgChecker (argc, argv) == ASM_FUNC_FAIL)
         return -1;
 
-    FILE *asm_file = fopen (FileToAssembleName (argv), "rb");                 //TODO func from there
-    assert (asm_file);
-
     struct stat asm_file_stat = {};
-    stat (FileToAssembleName (argv), &asm_file_stat);
 
-    char *buf = BufferMaker (asm_file_stat.st_size);
-
-    FileToBuf (asm_file, buf, asm_file_stat.st_size);
-
-    fclose (asm_file);                                       //TODO func to there
-    asm_file = NULL;
+    char *buf = BufFromFile (FileToAssembleName (argv), &asm_file_stat);
 
     const size_t number_of_strings = StringCounter (buf, asm_file_stat.st_size);
 

@@ -7,6 +7,23 @@
 
 #include "functions_for_input.h"
 
+char *BufFromFile (const char *file_name, struct stat *file_stat) {
+
+    FILE *ptr_to_file = fopen (file_name, "rb");
+    assert (ptr_to_file);
+
+    stat (file_name, file_stat);
+
+    char *buf = BufferMaker (file_stat -> st_size);
+
+    FileToBuf (ptr_to_file, buf, file_stat -> st_size);
+
+    fclose (ptr_to_file);
+    ptr_to_file = NULL;
+
+    return buf;
+}
+
 char *BufferMaker (const off_t buf_size) {
 
     char *buffer = (char *) calloc (buf_size + 1, sizeof (char));

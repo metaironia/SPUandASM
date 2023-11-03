@@ -10,6 +10,8 @@ struct PtrToStr {
     char *pointer_to_string;
 };
 
+char *BufFromFile (const char *file_name, struct stat *file_stat);
+
 char *BufferMaker (const off_t buf_size);
 
 PtrToStr *PointersToStringsMaker (const int64_t number_of_strings);
