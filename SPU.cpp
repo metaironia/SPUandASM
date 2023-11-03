@@ -11,7 +11,10 @@
 
 int main (const int argc, const char *argv[]) {
 
-    FILE* byte_code = fopen (BYTE_CODE, "rb");
+    if (CommandLineArgChecker (argc, argv) == SPU_FUNC_FAIL)
+        return -1;
+
+    FILE* byte_code = fopen (BytecodeFileName (argv), "rb");
     assert (byte_code);
 
     RunByteCode (byte_code);

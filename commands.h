@@ -26,7 +26,7 @@ DEF_CMD (in, 7, 0,  double num_to_in = 0;
                     PUSH (num_to_in);
                     position_in_code_array++;)
 
-DEF_CMD (out, 8, 0, printf ("%lf\n", POP);
+DEF_CMD (out, 8, 0, printf ("%.2lf\n", POP);
                     position_in_code_array++;)
 
 DEF_CMD (sqrt, 9, 0, PUSH (sqrt (POP));
@@ -59,3 +59,6 @@ DEF_JMP (call, 19, 1, PUSH_RET;
                       JMP_CODE;)
 
 DEF_CMD (ret, 20, 0, position_in_code_array = (size_t) POP_RET;)
+
+DEF_CMD (outc, 21, 0, printf ("%c", (char) POP);
+                      position_in_code_array++;)

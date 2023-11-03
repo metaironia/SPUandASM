@@ -2,12 +2,6 @@
 #define ASM_FUNC_H
 
 
-#define ASM_FILE              "program on asm.txt" //TODO make flag instead of const here
-
-#define BYTE_CODE             "byte code.bin"
-
-
-
 const char COMMENTARY_MARK = ';';
 
 enum AsmFuncStatus {
@@ -21,7 +15,7 @@ const int ARG_FORMAT_REG   = (1 << 6);
 const int ARG_FORMAT_RAM   = (1 << 7);
 
 const int MAX_WORD_LENGTH = 20;
-const int MAX_NUM_OF_LABELS = 10;
+const int MAX_NUM_OF_LABELS = 20;
 
 struct LabelForJump {
 
@@ -67,5 +61,13 @@ bool IsSquareBracket (const char *const string_to_check, size_t *position_in_str
                       const char bracket_type);
 
 enum AsmFuncStatus PrintJumpLabel (const LabelForJump *const label_jmp);
+
+enum AsmFuncStatus CommandLineArgChecker (const int argcc, const char *argvv[]);
+
+const char *FileToAssembleName (const char *argvv[]);
+
+const char *FileAfterAssembleName (const char *argvv[]);
+
+enum AsmFuncStatus MyStrncpy (char *const destination, char *const source, size_t symbols_count);
 
 #endif

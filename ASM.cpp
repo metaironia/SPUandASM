@@ -13,11 +13,14 @@ int main (const int argc, const char *argv[]) {
 
 //============================ Inputting asm file part =================================
 
-    FILE *asm_file = fopen (ASM_FILE, "rb");                 //TODO func from there
+    if (CommandLineArgChecker (argc, argv) == ASM_FUNC_FAIL)
+        return -1;
+
+    FILE *asm_file = fopen (FileToAssembleName (argv), "rb");                 //TODO func from there
     assert (asm_file);
 
     struct stat asm_file_stat = {};
-    stat (ASM_FILE, &asm_file_stat);
+    stat (FileToAssembleName (argv), &asm_file_stat);
 
     char *buf = BufferMaker (asm_file_stat.st_size);
 
@@ -26,7 +29,7 @@ int main (const int argc, const char *argv[]) {
     fclose (asm_file);                                       //TODO func to there
     asm_file = NULL;
 
-    size_t number_of_strings = StringCounter (buf, asm_file_stat.st_size);
+    const size_t number_of_strings = StringCounter (buf, asm_file_stat.st_size);
 
     PtrToStr *pointers_to_strings = PointersToStringsMaker (number_of_strings);
 
@@ -38,7 +41,7 @@ int main (const int argc, const char *argv[]) {
 
 //========================== ASM file analysis  ===================================================
 
-    double *code_array = (double *) calloc (number_of_strings * 2, sizeof (double)); //TODO fix when will do jump
+    double *code_array = (double *) calloc (number_of_strings * 2, sizeof (double));
     size_t position_in_code_array = 0;
 
     LabelForJump labels_to_jmp[MAX_NUM_OF_LABELS] = {};
@@ -64,12 +67,12 @@ int main (const int argc, const char *argv[]) {
 
 //========================== Byte code creation ==================================================
 
-    FILE *byte_code = fopen (BYTE_CODE, "wb");
+    FILE *byte_code = fopen (FileAfterAssembleName (argv), "wb");
     assert (byte_code);
 
     position_in_code_array = 0;
 
-    for (; position_in_code_array < number_of_strings * 2; position_in_code_array++) //TODO fix when will do jump
+    for (; position_in_code_array < number_of_strings * 2; position_in_code_array++)
         WriteToBinFile (code_array, position_in_code_array, byte_code);
 
     fclose (byte_code);

@@ -44,6 +44,7 @@
                                 }                                                                           \
                                 else
 
+
 enum AsmFuncStatus Assemble (PtrToStr *const ptrs_to_strings, const size_t current_str,
                              double *const code_arr,          size_t *const position_in_code_arr,
                              LabelForJump *const labels,      size_t *label_counter,
@@ -53,12 +54,12 @@ enum AsmFuncStatus Assemble (PtrToStr *const ptrs_to_strings, const size_t curre
     assert (code_arr);
     assert (position_in_code_arr);
 
+    FindCommentaryInString (ptrs_to_strings, current_str);
+
     if (IsRestStringEmpty (ptrs_to_strings[current_str].pointer_to_string, 0))
         return ASM_FUNC_OK;
 
     char first_word[MAX_WORD_LENGTH] = "";
-
-    FindCommentaryInString (ptrs_to_strings, current_str);
 
     size_t current_pos_str = 0;
 
@@ -69,7 +70,7 @@ enum AsmFuncStatus Assemble (PtrToStr *const ptrs_to_strings, const size_t curre
         if (num_of_compilation >= 2)
             return ASM_FUNC_OK;
 
-        strcpy (labels[*label_counter].name, first_word + 1);           //TODO fix strncpy instead of strcpy
+        MyStrncpy (labels[*label_counter].name, first_word + 1, MAX_WORD_LENGTH);
         labels[*label_counter].address = *position_in_code_arr;
 
         (*label_counter)++;
@@ -172,9 +173,12 @@ enum AsmFuncStatus WriteToBinFile (double *const arr_of_code, const size_t pos, 
 
     LOG_PRINT_ASM (ASM_LOG_FILE, "value %.5lf in code array to position %Iu (", arr_of_code[pos], pos);
 
+    unsigned long long command_code = 0;
+
+    memcpy (&command_code, &arr_of_code[pos], sizeof (double));
+
     for (int current_byte = sizeof (double) * 8 - 1; current_byte >= 0; current_byte--)
-        LOG_PRINT_ASM (ASM_LOG_FILE, "%d",
-                       ((((long long)(arr_of_code[pos]) & (1 << current_byte)) == 0 ? 0 : 1)));  //TODO fix compare by memcmp
+        LOG_PRINT_ASM (ASM_LOG_FILE, "%d", ((((command_code & (1ll << current_byte)) == 0) ? 0 : 1)));
 
     LOG_PRINT_ASM (ASM_LOG_FILE, ")\n");
 
@@ -246,7 +250,7 @@ enum AsmFuncStatus ParseAndSetArgs (int command_num,              const char* co
 
             command_num |= ARG_FORMAT_REG;
 
-            int reg_number = reg_symbol - 'a' + 1;
+            int reg_number = reg_symbol - 'a';
 
             sscanf (asm_string + position_in_string, " + %lf%n", &value, &temp_position_in_string);
 
@@ -258,7 +262,7 @@ enum AsmFuncStatus ParseAndSetArgs (int command_num,              const char* co
                 position_in_string += temp_position_in_string;
 
                 command_num |= ARG_FORMAT_IMMED;
-                                                                                                    //TODO flag to RAM
+
                 EmitCodeArgAndReg (array_of_code, position, command_num, reg_number, value);
             }
         }
@@ -360,6 +364,49 @@ enum AsmFuncStatus PrintJumpLabel (const LabelForJump *const label_jmp) {
 
         printf ("\n");
     }
+
+    return ASM_FUNC_OK;
+}
+
+enum AsmFuncStatus CommandLineArgChecker (const int argcc, const char *argvv[]) {
+
+    assert (argvv);
+
+    if (argcc < 3) {
+
+        fprintf (stderr, "Not enough arguments.");
+
+        return ASM_FUNC_FAIL;
+    }
+
+    if (argcc > 3) {
+
+        fprintf (stderr, "Too much arguments.");
+
+        return ASM_FUNC_FAIL;
+    }
+
+    return ASM_FUNC_OK;
+}
+
+const char *FileToAssembleName (const char *argvv[]) {
+
+    return argvv[1];
+}
+
+const char *FileAfterAssembleName (const char *argvv[]) {
+
+    return argvv[2];
+}
+
+enum AsmFuncStatus MyStrncpy (char *const destination, char *const source, size_t symbols_count) {
+
+    assert (destination);
+    assert (source);
+
+    memcpy (destination, source, symbols_count);
+
+    destination[symbols_count - 1] = '\0';
 
     return ASM_FUNC_OK;
 }

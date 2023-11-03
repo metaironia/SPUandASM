@@ -5,8 +5,6 @@
 #include "mystacklib/my_stack_func.h"
 
 
-#define BYTE_CODE          "byte code.bin"
-
 #define PUSH(arg)          StackPush (&(main_spu.stk), arg)
 
 #define POP                StackPop (&(main_spu.stk))
@@ -37,6 +35,10 @@ struct SpuStruct {
 };
 
 enum SpuFuncStatus RunByteCode (FILE *bin_file);
+
+enum SpuFuncStatus CommandLineArgChecker (const int argcc, const char *argvv[]);
+
+const char *BytecodeFileName (const char *argvv[]);
 
 double *GetArgument (const double *code_arr, size_t *code_arr_position, const char *const command_name,
                      double *spu_RAM, double *spu_regs);
