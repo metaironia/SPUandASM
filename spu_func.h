@@ -16,7 +16,7 @@
 
 #define SPU_SIGNATURE "SKA!"
 
-const int SPU_VERSION = 1.1;
+const double SPU_VERSION = 1.2;
 
 const int SIGNATURE_SIZE_BYTES = 4;
 const int VERSION_SIZE_BYTES   = 8;
