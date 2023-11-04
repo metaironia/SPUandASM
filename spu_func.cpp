@@ -1,3 +1,5 @@
+#include "TXLib.h"
+
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -8,6 +10,9 @@
 #include "mystacklib/my_stack_func.h"
 #include "spu_func.h"
 #include "math_operation.h"
+
+#include "graphics.h"
+
 
 
 #define JMP_CODE                                        {position_in_code_array =                          \
@@ -34,9 +39,6 @@
 enum SpuFuncStatus RunByteCode (FILE *bin_file) {
 
     assert (bin_file);
-
-    if (SignAndVersionChecker (bin_file) == SPU_FUNC_FAIL)
-        return SPU_FUNC_FAIL;
 
     struct stat bin_file_stat = {};
     fstat (fileno (bin_file), &bin_file_stat);
@@ -66,6 +68,17 @@ enum SpuFuncStatus RunByteCode (FILE *bin_file) {
             default:
                 return SPU_FUNC_FAIL;
         }
+
+//    for (int i = 0; i < 100; i++)
+//        {
+//        txSetColor (TX_WHITE);
+//        txSetFillColor (main_spu.RAM[i]? TX_YELLOW : TX_CYAN);
+//
+//        int x = i % 10, y = i / 10;
+//
+//        txRectangle (5 + x*60, 5 + y*60, 5 + x*60 + 50, 5 + y*60 + 50);
+//        }
+
     }
 }
 
@@ -73,6 +86,10 @@ double *GetArgument (const double *code_arr, size_t *code_arr_position, const ch
                      double *spu_RAM, double *spu_regs) {
 
     assert (code_arr);
+    assert (code_arr_position);
+
+    assert (spu_RAM);
+    assert (spu_regs);
 
     long long cmd = (long long) code_arr[(*code_arr_position)++];
 
@@ -174,6 +191,8 @@ enum SpuFuncStatus SignAndVersionChecker (FILE *bin_to_check) {
 }
 
 const char *BytecodeFileName (const char *argvv[]) {
+
+    assert (argvv);
 
     return argvv[1];
 }

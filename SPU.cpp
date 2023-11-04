@@ -17,6 +17,9 @@ int main (const int argc, const char *argv[]) {
     FILE* byte_code = fopen (BytecodeFileName (argv), "rb");
     assert (byte_code);
 
+    if (SignAndVersionChecker (byte_code) == SPU_FUNC_FAIL)
+        return -1;
+
     RunByteCode (byte_code);
 
     return 0;

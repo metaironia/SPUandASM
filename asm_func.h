@@ -4,7 +4,7 @@
 
 #define ASM_SIGNATURE "SKA!"
 
-const double ASM_VERSION = 1.0;
+const double ASM_VERSION = 1.1;
 
 const char COMMENTARY_MARK = ';';
 

@@ -16,7 +16,7 @@
 
 #define SPU_SIGNATURE "SKA!"
 
-const int SPU_VERSION = 1.0;
+const int SPU_VERSION = 1.1;
 
 const int SIGNATURE_SIZE_BYTES = 4;
 const int VERSION_SIZE_BYTES   = 8;
@@ -28,6 +28,9 @@ const int ARG_FORMAT_RAM   = (1 << 7);
 
 const int BYTE_MASK_FOR_CMD = 0x1F;
 
+const int NUMBER_OF_REGS = 4;
+const size_t RAM_SIZE = 900;
+
 enum SpuFuncStatus {
 
     SPU_FUNC_OK,
@@ -38,8 +41,8 @@ struct SpuStruct {
 
     Stack stk;
     Stack stk_ret_addresses;
-    double regs[4]; // rax, rbx, rcx, rdx
-    double RAM[100]; // 100 because of DED advice
+    double regs[NUMBER_OF_REGS]; // rax, rbx, rcx, rdx
+    double RAM[RAM_SIZE];
 };
 
 enum SpuFuncStatus RunByteCode (FILE *bin_file);

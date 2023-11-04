@@ -18,7 +18,7 @@ DEF_CMD (mul, 5, 0, PUSH (POP * POP);
 
 DEF_CMD (div, 6, 0, double first_num = POP;
                     double second_num = POP;
-                    PUSH (second_num / first_num);
+                    PUSH ((int) second_num / (int) first_num);
                     position_in_code_array++;)
 
 DEF_CMD (in, 7, 0,  double num_to_in = 0;
@@ -61,4 +61,7 @@ DEF_JMP (call, 19, 1, PUSH_RET;
 DEF_CMD (ret, 20, 0, position_in_code_array = (size_t) POP_RET;)
 
 DEF_CMD (outc, 21, 0, printf ("%c", (char) POP);
+                      position_in_code_array++;)
+
+DEF_CMD (vram, 22, 0, VideoRAM (main_spu.RAM);
                       position_in_code_array++;)
