@@ -39,7 +39,11 @@ DEF_CMD (sin, 10, 0, PUSH (sin (POP));
 DEF_CMD (cos, 11, 0, PUSH (cos (POP));
                      position_in_code_array++;)
 
-DEF_CMD (hlt, -1, 0, return SPU_FUNC_FAIL;)
+DEF_CMD (hlt, -1, 0, free (code_array);
+		     code_array = NULL;
+		     StackDtor (&(main_spu.stk));
+		     StackDtor (&(main_spu.stk_ret_addresses));
+		     return SPU_FUNC_FAIL;)
 
 DEF_JMP (jmp, 12, 1, JMP_CODE)
 

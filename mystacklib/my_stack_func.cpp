@@ -78,7 +78,7 @@ enum StackFuncStatus StackDtor (Stack *stk) {
     if (StackDataDtor (stk) != StackFuncStatus::OK)
         return FAIL;
 
-    free (stk);
+//    free (stk);
 
     LOG_PRINT_STACK (LOG_FILE_STACK, "\n Stack successfully destructed. \n");
 

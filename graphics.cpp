@@ -1,10 +1,8 @@
 #include "TXLib.h"
 
-
 #include "math_operation.h"
 #include "spu_func.h"
 #include "graphics.h"
-
 
 void VideoRAM (const double *const ram) {
 
@@ -33,3 +31,5 @@ void SetBackground (const int tx_color) {
 
     txRectangle (0, 0, WINDOW_X_SIZE, WINDOW_Y_SIZE);
 }
+     
+

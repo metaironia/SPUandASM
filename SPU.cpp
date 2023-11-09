@@ -7,7 +7,7 @@
 
 #include "mystacklib/my_stack_func.h"
 #include "spu_func.h"
-
+#include "graphics.h"
 
 int main (const int argc, const char *argv[]) {
 
@@ -21,6 +21,9 @@ int main (const int argc, const char *argv[]) {
         return -1;
 
     RunByteCode (byte_code);
+	
+    fclose (byte_code);
+    byte_code = NULL;
 
     return 0;
 }

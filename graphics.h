@@ -1,9 +1,6 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
-
-#include "TXLib.h"
-
 const double THICKNESSS = 4;
 
 const int RADIUS_OF_CIRCLE = 10;

@@ -403,14 +403,12 @@ enum AsmFuncStatus CommandLineArgChecker (const int argcc, const char *argvv[]) 
     if (argcc < 3) {
 
         fprintf (stderr, "Not enough arguments.");
-
         return ASM_FUNC_FAIL;
     }
 
     if (argcc > 3) {
 
         fprintf (stderr, "Too much arguments.");
-
         return ASM_FUNC_FAIL;
     }
 
@@ -432,7 +430,7 @@ enum AsmFuncStatus MyStrncpy (char *const destination, char *const source, size_
     assert (destination);
     assert (source);
 
-    memcpy (destination, source, symbols_count);
+    memcpy (destination, source, symbols_count);  // Ну и что тут такого.
 
     destination[symbols_count - 1] = '\0';
 
