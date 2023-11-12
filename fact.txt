@@ -1,0 +1,40 @@
+jmp main
+
+:main
+	in
+	call factorial
+	push rbx
+	out 
+	hlt
+
+
+:factorial ; F(n) = n * F(n - 1) = F(n - 1) * n, rax should contain n 
+	
+	pop rax            
+	push rax          ; popped and pushed n to stack
+
+	push rax 
+	push 1
+
+	jb fact_step 
+
+		pop rbx
+		ret
+
+:fact_step
+
+	push rax           
+	push -1
+	add                ; pushed n - 1 in stack
+
+	call factorial     ; F(n - 1) in rbx 
+
+	pop rax
+
+	push rax
+	push rbx	
+
+	mul
+	pop rbx
+	ret 	
+		

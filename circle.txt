@@ -1,0 +1,96 @@
+jmp main
+
+:main
+	call ComputeCircleCoords
+	vram
+	hlt
+
+
+
+	
+:ComputeCircleCoords
+	
+	push 0
+	pop rax
+
+:for_circle_end
+
+push rax
+out
+
+	push rax
+	push 30
+	div     
+	floor ; current y pos
+;push 121
+;outc
+;pop rdx
+;push rdx
+;push rdx
+;out
+
+	push 15  ; central element y (y_0)
+
+	sub
+	pop rbx
+	push rbx
+	push rbx
+	mul      ; (y - y_0)^2 in stack
+
+	push rax
+	push rax
+	push 30
+	div
+	floor
+	push 30
+	mul
+	sub     ; current x pos 
+;push 120
+;outc
+;pop rdx
+;push rdx
+;push rdx
+;out
+	push 15  ; central element x (x_0)
+
+	sub
+	pop rcx
+	push rcx
+	push rcx
+	mul      ; (x - x_0)^2 in stack
+	
+	add
+	pop rdx
+
+	push 100 ; r_min = 12, r_min^2 = 144
+	push rdx
+
+	jb IsDotOnCircle
+
+	push 196 ; r_max = 14, r_max^2 = 196
+	push rdx
+
+	ja IsDotOnCircle
+
+		push 1
+		pop [rax]
+	        jmp AfterIsDot
+:IsDotOnCircle
+
+	push 0
+	pop [rax]
+	
+:AfterIsDot
+
+	push rax + 1       ; count in cycle
+	pop rax
+
+	push rax
+;out
+;push [rax]
+;out
+;push rax
+	push 899
+
+	ja for_circle_end
+	ret
