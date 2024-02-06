@@ -47,9 +47,9 @@ DEF_CMD (hlt, -1, 0, free (code_array);
 
 DEF_JMP (jmp, 12, 1, JMP_CODE)
 
-DEF_COND_JMP (ja, 13, 1, !IsDoubleLess)
+DEF_COND_JMP (ja, 13, 1, !IsDoubleLessOrEqual)
 
-DEF_COND_JMP (jae, 14, 1, !IsDoubleLessOrEqual)
+DEF_COND_JMP (jae, 14, 1, !IsDoubleLess)
 
 DEF_COND_JMP (jb, 15, 1, IsDoubleLess)
 
